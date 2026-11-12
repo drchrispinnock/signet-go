@@ -17,6 +17,9 @@ struct DashboardView: View {
             } else {
                 Section {
                     ForEach(model.assets) { AssetRowView(asset: $0) }
+                    if !(model.selectedWallet?.address.isContract ?? true) {
+                        DelegateRowView(model: model) { sheet = .staking }
+                    }
                 }
             }
             Section {
@@ -147,7 +150,7 @@ struct BadgeLabel: View {
     }
 }
 
-/// Send, Receive, Get tez (test networks), Stake. Stake comes with its screen.
+/// Send, Receive, Get tez (test networks), Stake.
 struct ActionButtonsView: View {
     @Bindable var model: WalletViewModel
     @Binding var sheet: Sheet?
@@ -161,7 +164,8 @@ struct ActionButtonsView: View {
                 action("Get tez", "drop") { Task { await model.requestTestTez() } }
                     .disabled(model.selectedWallet?.address.isContract != false || isFaucetBusy)
             }
-            action("Stake", "lock") {}.disabled(true)
+            action("Stake", "lock") { sheet = .staking }
+                .disabled(model.selectedWallet?.address.isContract != false || model.accountNotOnChain)
         }
         .buttonStyle(.borderless)
     }

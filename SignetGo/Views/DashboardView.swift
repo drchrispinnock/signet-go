@@ -4,6 +4,7 @@ import SwiftUI
 struct DashboardView: View {
     @Bindable var model: WalletViewModel
     @Binding var sheet: Sheet?
+    @AppStorage(AppSettings.expertModeKey) private var expertMode = false
 
     var body: some View {
         List {
@@ -17,8 +18,16 @@ struct DashboardView: View {
             } else {
                 Section {
                     ForEach(model.assets) { AssetRowView(asset: $0) }
-                    if !(model.selectedWallet?.address.isContract ?? true) {
-                        DelegateRowView(model: model) { sheet = .staking }
+                    if let wallet = model.selectedWallet {
+                        DelegateRowView(model: model) {
+                            if wallet.address.isContract {
+                                // A contract delegates through its signers: Sign multisig on this contract.
+                                model.signMultisigPreset = .init(contract: MultisigContract(alias: wallet.alias, address: wallet.address), delegating: true)
+                                sheet = .signMultisig
+                            } else {
+                                sheet = .staking
+                            }
+                        }
                     }
                 }
             }
@@ -97,6 +106,23 @@ struct DashboardView: View {
                     if model.canBridge {
                         Button("Bridge to Etherlink…", systemImage: "arrow.left.arrow.right") { sheet = .bridge }
                     }
+                    if expertMode {
+                        Section("Expert") {
+                            if model.canProveSelectedKey {
+                                Button("Proof of possession…", systemImage: "checkmark.seal") { sheet = .proofOfPossession }
+                            }
+                            Menu("Multisig", systemImage: "person.3") {
+                                Button("Create multisig…") { sheet = .createMultisig }
+                                Button("Add multisig…") { sheet = .addMultisig }
+                                Button("Sign multisig transaction…") { sheet = .signMultisig }
+                                Button("Submit multisig transaction…") { sheet = .submitMultisig }
+                            }
+                            Button("Baking…", systemImage: "frying.pan") { sheet = .baking }
+                            if model.canGovern {
+                                Button("Governance…", systemImage: "checkmark.bubble") { sheet = .governance }
+                            }
+                        }
+                    }
                     Divider()
                     Button("Networks…", systemImage: "network") { sheet = .networks }
                     Button("Settings…", systemImage: "gear") { sheet = .settings }
@@ -116,9 +142,13 @@ struct AccountSwitcher: View {
     var body: some View {
         Menu {
             let owned = model.wallets.filter { $0.keyKind != .none }
-            let watched = model.wallets.filter { $0.keyKind == .none }
+            let watched = model.wallets.filter { $0.keyKind == .none && !$0.address.isContract }
+            let contracts = model.wallets.filter { $0.address.isContract }
             if !owned.isEmpty {
                 Section("My accounts") { ForEach(owned) { item($0) } }
+            }
+            if !contracts.isEmpty {
+                Section("Contracts") { ForEach(contracts) { item($0) } }
             }
             if !watched.isEmpty {
                 Section("Address book") { ForEach(watched) { item($0) } }
@@ -155,7 +185,8 @@ struct AccountHeaderView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {
                         Text(wallet.alias).font(.headline)
-                        if wallet.keyKind == .none { BadgeLabel(text: "Watch only") }
+                        if wallet.address.isContract { BadgeLabel(text: "Contract") }
+                        else if wallet.keyKind == .none { BadgeLabel(text: "Watch only") }
                         if wallet.isSessionOnly { BadgeLabel(text: "This session") }
                     }
                     Button {

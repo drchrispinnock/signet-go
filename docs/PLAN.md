@@ -23,6 +23,11 @@ Upstream files that cannot build on iOS get replacements in this repository:
 
 ## Features
 
+Status (2026-11-12): everything below except Ledger and Secure Enclave is built; Expert mode
+(Settings) shows multisig, baking, governance and proof of possession. Live Shadownet,
+Quantumnet and Etherlink tests for send, staking, dApps, bridge, alias linking and multisig pass
+on the iOS simulator.
+
 | Area | Phase |
 |---|---|
 | Create (tz1 to tz5), import (phrase, secret key, fundraiser), session-only paper keys, export, rename, forget | v1 |

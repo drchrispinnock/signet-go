@@ -24,7 +24,11 @@ read the relevant section there before touching anything that uses it. The sibli
 - Upstream files that need macOS (`PublicHTTPClient`'s `/usr/bin/curl`, `LedgerHID`'s IOKit,
   `NSImage`/`NSApp` users, Sparkle's `UpdaterService`) are excluded and replaced by iOS versions
   in this repository, keeping upstream's type names and API so the rest of the module compiles.
-- Views are written new for iPhone; upstream's SwiftUI views are reference, not compiled.
+- Views are written new for iPhone where the Mac layout does not fit (dashboard, Send, Staking,
+  NFTs, Networks…). Upstream sheets that are portable SwiftUI apart from a few Mac calls are
+  **generated** into `SignetGo/Views/Ported` by `scripts/port-views.py` (multisig, baking,
+  governance, proof of possession, behind Expert mode): never edit those files; re-run the
+  script after bumping the submodule, and extend its substitutions if a new Mac call appears.
 
 ## Never include
 
@@ -80,6 +84,7 @@ Running on a device or as "Designed for iPad" on the Mac needs an Apple Developm
 - `SignetGo/Services`: iOS-side logic that is not a replacement: `KeyPolicy` (mainnet keys always
   encrypted, 12-character minimum; apply it wherever a key is written) and `RecoveryPhrase`
   (BIP39 phrases in Swift; candidates to move upstream).
-- `SignetGo/Views`: iPhone views. Upstream statics that upstream's tests call keep their
+- `SignetGo/Views`: iPhone views. One sheet at a time, routed by the `Sheet` enum in
+  `RootView`; dApp requests open by themselves when no other sheet is up. Upstream statics that upstream's tests call keep their
   names and signatures (`SendSheet.capture`).
 - `Tests/SignetGoTests`: the port's own tests (`NeverIncludedTests` guards Buy/TzEL staying out).

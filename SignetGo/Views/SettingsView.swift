@@ -3,6 +3,8 @@ import SwiftUI
 /// Preferences kept in UserDefaults (never secrets).
 enum AppSettings {
     static let showsTestNetworksKey = "showsTestNetworks"
+    /// Multisig, baking, governance and proofs of possession in the menu.
+    static let expertModeKey = "expertMode"
 }
 
 /// Light, dark, or follow the system (upstream's `Appearance`, applied with
@@ -41,6 +43,7 @@ struct SettingsView: View {
     @AppStorage(Appearance.key) private var appearance: Appearance = .system
     @AppStorage(Disclaimer.key) private var showsDisclaimer = true
     @AppStorage(AppSettings.showsTestNetworksKey) private var showsTestNetworks = true
+    @AppStorage(AppSettings.expertModeKey) private var expertMode = false
     @State private var verboseDAppLog = DeveloperSettings.dappDiagnosticsArmed
 
     private var version: String {
@@ -61,6 +64,11 @@ struct SettingsView: View {
                 Toggle("Show test networks", isOn: $showsTestNetworks)
             } footer: {
                 Text("Shadownet, Bakingnet and the other test networks hold test tez only.")
+            }
+            Section {
+                Toggle("Expert mode", isOn: $expertMode)
+            } footer: {
+                Text("Adds multisig contracts, baking, governance and proofs of possession to the menu.")
             }
             Section {
                 Toggle("Verbose dApp log on the next launch", isOn: $verboseDAppLog)

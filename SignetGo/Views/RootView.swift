@@ -1,9 +1,20 @@
 import SwiftUI
 
 /// The sheets the app can show. One at a time, as on the Mac.
-enum Sheet: String, Identifiable {
+enum Sheet: Identifiable, Hashable {
     case send, receive, staking, rename, forget, exportKey, rememberKey, createAccount, addAddress, importAccount, exportWallet, networks
-    var id: String { rawValue }
+    case nft(NFT)
+    case nftOperation(NFTOperation)
+    case nftDownload(NFTDownload)
+
+    var id: String {
+        switch self {
+        case .nft(let nft): "nft:" + nft.id
+        case .nftOperation(let op): "op:" + op.id
+        case .nftDownload(let download): "download:" + download.id
+        default: String(describing: self)
+        }
+    }
 }
 
 /// Welcome screen with no accounts, else the dashboard.
@@ -37,9 +48,21 @@ struct RootView: View {
                 case .importAccount: ImportAccountView(model: model)
                 case .exportWallet: ExportWalletView(model: model)
                 case .networks: NetworksView(model: model)
+                case .nft(let nft): NFTDetailView(model: model, nft: nft, next: $sheet)
+                case .nftOperation(let operation): TransferNFTView(model: model, operation: operation)
+                case .nftDownload(let download): DownloadNFTsView(download: download)
                 }
             }
         }
-        .task { await model.refresh() }
+        .task {
+            #if DEBUG
+            // Screenshots: `simctl launch … -SignetGoActivityTab nfts` opens on that tab.
+            if let tab = UserDefaults.standard.string(forKey: "SignetGoActivityTab"),
+               let choice = WalletViewModel.ActivityTab.allCases.first(where: { String(describing: $0) == tab }) {
+                model.activityTab = choice
+            }
+            #endif
+            await model.refresh()
+        }
     }
 }

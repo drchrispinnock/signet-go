@@ -26,12 +26,15 @@ struct DashboardView: View {
                 Picker("Activity", selection: $model.activityTab) {
                     Text("Activity").tag(WalletViewModel.ActivityTab.transactions)
                     Text("Tokens").tag(WalletViewModel.ActivityTab.assets)
+                    Text("NFTs").tag(WalletViewModel.ActivityTab.nfts)
                 }
                 .pickerStyle(.segmented)
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
                 switch model.activityTab {
-                case .transactions, .nfts:
+                case .nfts:
+                    NFTGridSection(model: model, sheet: $sheet)
+                case .transactions:
                     if model.visibleTransactions.isEmpty {
                         Text(model.isLoading ? "Loading…" : "No transactions yet.").foregroundStyle(.secondary)
                     }
@@ -40,6 +43,7 @@ struct DashboardView: View {
                     if model.visibleTokens.isEmpty {
                         Text(model.isLoading ? "Loading…" : "No tokens.").foregroundStyle(.secondary)
                     }
+                    PortfolioStateNote(state: model.portfolioState)
                     ForEach(model.visibleTokens) { AssetRowView(asset: $0) }
                 }
             }

@@ -55,6 +55,18 @@ struct DashboardView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    if model.selectedWallet != nil {
+                        Section(model.selectedWallet?.alias ?? "") {
+                            Button("Rename…", systemImage: "pencil") { sheet = .rename }
+                            if model.canExportSelectedKey {
+                                Button("Export secret key…", systemImage: "key.viewfinder") { sheet = .exportKey }
+                            }
+                            if model.canRememberSelectedKey {
+                                Button("Remember key…", systemImage: "square.and.arrow.down") { sheet = .rememberKey }
+                            }
+                            Button("Forget…", systemImage: "trash", role: .destructive) { sheet = .forget }
+                        }
+                    }
                     Button("Create account…", systemImage: "plus") { sheet = .createAccount }
                     Button("Import account…", systemImage: "key") { sheet = .importAccount }
                     Button("Watch an address…", systemImage: "eye") { sheet = .addAddress }

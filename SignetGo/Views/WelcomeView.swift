@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// No accounts yet: the ways in. Ledger waits on Bluetooth.
+/// No accounts yet: the ways in.
 struct WelcomeView: View {
     @Bindable var model: WalletViewModel
     @Binding var sheet: Sheet?
@@ -24,6 +24,10 @@ struct WelcomeView: View {
                 .buttonStyle(.borderedProminent)
                 Button { sheet = .importAccount } label: {
                     Label("Import an account", systemImage: "key").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                Button { sheet = .connectLedger } label: {
+                    Label("Connect a Ledger", systemImage: "lock.rectangle.stack").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
                 Button { sheet = .addAddress } label: {

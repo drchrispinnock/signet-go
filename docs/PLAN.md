@@ -17,13 +17,14 @@ Upstream files that cannot build on iOS get replacements in this repository:
 | Upstream | Why | Replacement |
 |---|---|---|
 | `PublicHTTPClient` | runs `/usr/bin/curl` via `Process` | Network.framework connection to the validated public IP, TLS SNI/hostname validation kept, same byte/time/slot limits |
-| `LedgerHID` | IOKit USB HID | stub first; Bluetooth (Nano X, Flex, Stax) later |
+| `LedgerHID` | IOKit USB HID | `LedgerBLE.swift`: CoreBluetooth transport (Nano X, Flex, Stax), same interface; not yet tested with a device |
 | `ImageLoader`, `ArtworkCache`, `QRCode`, `Appearance` | `NSImage`, `NSApp` | UIKit equivalents |
 | `UpdaterService` | Sparkle | none: TestFlight / App Store |
 
 ## Features
 
-Status (2026-11-12): everything below except Ledger and Secure Enclave is built; Expert mode
+Status (2026-11-12): everything below except Secure Enclave is built (Ledger over Bluetooth is
+written but not yet tried with a device); Expert mode
 (Settings) shows multisig, baking, governance and proof of possession. Live Shadownet,
 Quantumnet and Etherlink tests for send, staking, dApps, bridge, alias linking and multisig pass
 on the iOS simulator.

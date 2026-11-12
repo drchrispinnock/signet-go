@@ -99,6 +99,7 @@ struct DashboardView: View {
                     }
                     Button("Create account…", systemImage: "plus") { sheet = .createAccount }
                     Button("Import account…", systemImage: "key") { sheet = .importAccount }
+                    Button("Connect Ledger…", systemImage: "lock.rectangle.stack") { sheet = .connectLedger }
                     Button("Watch an address…", systemImage: "eye") { sheet = .addAddress }
                     Button("Export wallet…", systemImage: "square.and.arrow.up") { sheet = .exportWallet }
                     Divider()

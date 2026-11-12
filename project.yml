@@ -1,0 +1,91 @@
+name: SignetGo
+options:
+  bundleIdPrefix: org.tezos
+  deploymentTarget:
+    iOS: "18.0"
+  xcodeVersion: "27.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: CP8YGC8C4P
+targets:
+  SignetGo:
+    type: application
+    platform: iOS
+    sources:
+      - path: upstream/Signet/Models
+      - path: upstream/Signet/ViewModels
+      - path: upstream/Signet/Services
+        excludes:
+          - "tzel_blake2s.c"
+          - "UpdaterService.swift"
+          - "Appearance.swift"
+          - "ArtworkCache.swift"
+          - "ImageLoader.swift"
+          - "QRCode.swift"
+          - "PublicHTTPClient.swift"
+      - path: upstream/Signet/Services/tzel_blake2s.c
+        compilerFlags: "-O3"
+      - path: upstream/Signet/Resources/taquito-bridge.js
+        buildPhase: resources
+      - path: upstream/Signet/Resources/tzel-shadownet-producer.json
+        buildPhase: resources
+      - path: SignetGo
+    settings:
+      base:
+        PRODUCT_NAME: Signet
+        PRODUCT_MODULE_NAME: Signet
+        PRODUCT_BUNDLE_IDENTIFIER: org.tezos.signet.go
+        # Shared with upstream: code that only the shielded (TzEL) views need stays out.
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) SIGNET_NO_SHIELDED"
+        INFOPLIST_FILE: SignetGo/Info.plist
+        SWIFT_OBJC_BRIDGING_HEADER: SignetGo/SignetGo-Bridging-Header.h
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: "0.0"
+        CURRENT_PROJECT_VERSION: "1"
+  SignetTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      # Upstream's tests, unchanged, less those that exercise Mac-only code.
+      - path: upstream/SignetTests
+        excludes:
+          - "QRCodeTests.swift"
+          - "TestHostIsolationTests.swift"
+          - "UpdaterTests.swift"
+          - "BuyWebViewTests.swift"
+          - "MtPelerinTests.swift"   # Buy is never included
+          - "WalletLockMeasurementTests.swift"   # opt-in benchmark driving python3
+          - "ArtworkCacheTests.swift"
+          # Waiting on the iOS ImageLoader/ArtworkCache and the Network.framework PublicHTTPClient.
+          - "ArtworkPolicyTests.swift"
+          - "AvatarTests.swift"
+          - "NFTTests.swift"
+          - "AuditRepairTests.swift"
+      # The port's own tests.
+      - path: Tests/SignetGoTests
+    dependencies:
+      - target: SignetGo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.tezos.signet.go.tests
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) SIGNET_NO_SHIELDED"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Signet.app/Signet"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+schemes:
+  SignetGo:
+    build:
+      targets:
+        SignetGo: all
+        SignetTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - SignetTests

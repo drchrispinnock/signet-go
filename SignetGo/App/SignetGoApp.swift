@@ -37,7 +37,7 @@ struct SignetGoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView(model: model)
+            RootView(model: model)
                 // signet://?type=tzip10&data=<pairing code>: dApp pairing links.
                 .onOpenURL { url in model.handleIncomingURL(url) }
         }

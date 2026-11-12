@@ -1,0 +1,36 @@
+import SwiftUI
+
+/// The sheets the app can show. One at a time, as on the Mac.
+enum Sheet: String, Identifiable {
+    case receive, addAddress, importAccount, networks
+    var id: String { rawValue }
+}
+
+/// Welcome screen with no accounts, else the dashboard.
+struct RootView: View {
+    @Bindable var model: WalletViewModel
+    @State private var sheet: Sheet?
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if model.wallets.isEmpty {
+                    WelcomeView(model: model, sheet: $sheet)
+                } else {
+                    DashboardView(model: model, sheet: $sheet)
+                }
+            }
+        }
+        .sheet(item: $sheet) { sheet in
+            NavigationStack {
+                switch sheet {
+                case .receive: ReceiveView(model: model)
+                case .addAddress: AddAddressView(model: model)
+                case .importAccount: ImportAccountView(model: model)
+                case .networks: NetworksView(model: model)
+                }
+            }
+        }
+        .task { await model.refresh() }
+    }
+}

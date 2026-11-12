@@ -34,6 +34,10 @@ targets:
       - path: upstream/Signet/Resources/tzel-shadownet-producer.json
         buildPhase: resources
       - path: SignetGo
+        excludes:
+          - "Resources/bip39-english.txt"
+      - path: SignetGo/Resources/bip39-english.txt
+        buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: Signet

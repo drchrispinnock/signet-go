@@ -50,20 +50,36 @@ Upstream files that cannot build on iOS get replacements in this repository:
   `WalletViewModel` into its own object, the `ChainService` deposit/burn calls into a separate
   protocol, a bridge bundle built without `tzel.js`/`shield.js`), so it is not in the iOS binary.
   TzEL is still changing, which argues for doing that refactor before it grows further.
-- Wallet directory switching, `~/.signet_backups`, importing `~/.tezos-client`, Sparkle.
+- Wallet directory switching, `~/.signet_backups` generations (the device backup and Export wallet
+  replace them), importing `~/.tezos-client`, Sparkle.
 
 ## Keys and recovery
 
+Keys behave as they do in Signet on the Mac; the iPhone's backup plays the part of the Mac's
+backups.
+
 - Wallet files stay in octez-client's format (upstream's `TezosClientStore`, unchanged) inside
-  the app container, in a directory excluded from iCloud/iTunes backup
-  (`isExcludedFromBackup`) and with Data Protection `complete`.
-- New accounts are derived from a BIP39 recovery phrase, shown once and confirmed at creation
-  (the bridge needs a `generateMnemonic` beside its existing `validateMnemonic`/`keyFromMnemonic`).
-  Taquito derives tz1, tz2 and tz3 from a phrase; tz4 and tz5 are not phrase-recoverable.
-- Secrets at rest are octez `encrypted:` entries, as upstream writes them. Face ID / passcode
-  can unlock the password from the Keychain (this device only) so it need not be typed each time.
-- Recovery paths: the phrase, and export of the password-encrypted wallet to Files (the only
-  path for tz4/tz5).
+  the app container (`<container>/.signet`), with Data Protection `complete`, and **included in
+  the device's iCloud / computer backup** (`WalletDirectory`), as `~/.signet` is in the Mac's.
+  A backup is protected by Apple's encryption, end to end with Advanced Data Protection on.
+- **Mainnet keys on the device are always encrypted** (octez `encrypted:`, as upstream writes
+  them), with a password of at least 12 characters (`KeyPolicy`): in a backup, the password is
+  what protects the key. Test-network keys may be clear. Session-only paper keys never reach
+  the disk. The rule is enforced in the Create and Import screens, the only places keys are
+  written; upstream's view model does not know it.
+- **Create account**, as on the Mac: a random key of any supported type, tz1 to tz5 (upstream's
+  `createWallet`). On mainnet the screen then offers Export wallet.
+- **Optionally, a recovery phrase** for tz1 to tz3: shown once, three words checked. Made in
+  Swift (`RecoveryPhrase`: system randomness, SHA-256 checksum, the BIP39 English list) so the
+  entropy never passes through JavaScript; the key comes from upstream's `keyFromMnemonic` at
+  44'/1729'/0'/0' and restores in any BIP39 Tezos wallet. tz4 and tz5 have no standard phrase
+  derivation and are not offered one. A candidate to move upstream.
+- **Export wallet** saves the octez files (keys and contract aliases, one locked snapshot) as a
+  folder through Files, for octez-client, Signet on the Mac, or Import.
+- Recovery paths: the device backup; an exported wallet; the phrase, where one was made.
+- Later: iCloud Keychain (end-to-end encrypted even without Advanced Data Protection, syncs
+  without a full restore) as a further home for encrypted keys. Face ID / passcode can unlock
+  the password from the Keychain (this device only) so it need not be typed each time.
 - **Secure Enclave: not yet. It is done in the Mac version first**, then adopted here through
   upstream. Two parts: wrapping stored secrets with an Enclave P-256 key, and Enclave device
   keys (tz3 signed inside the Enclave, never exportable, recoverable only through a multisig

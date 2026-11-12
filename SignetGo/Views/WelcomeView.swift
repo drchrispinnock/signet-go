@@ -1,7 +1,6 @@
 import SwiftUI
 
-/// No accounts yet: the ways in. Creating a new account waits on phrase-based creation
-/// (docs/PLAN.md); Ledger waits on Bluetooth.
+/// No accounts yet: the ways in. Ledger waits on Bluetooth.
 struct WelcomeView: View {
     @Bindable var model: WalletViewModel
     @Binding var sheet: Sheet?
@@ -19,10 +18,14 @@ struct WelcomeView: View {
             }
             Spacer()
             VStack(spacing: 12) {
+                Button { sheet = .createAccount } label: {
+                    Label("Create an account", systemImage: "plus").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
                 Button { sheet = .importAccount } label: {
                     Label("Import an account", systemImage: "key").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
                 Button { sheet = .addAddress } label: {
                     Label("Watch an address", systemImage: "eye").frame(maxWidth: .infinity)
                 }

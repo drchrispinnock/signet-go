@@ -52,8 +52,10 @@ struct DashboardView: View {
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button("Create account…", systemImage: "plus") { sheet = .createAccount }
                     Button("Import account…", systemImage: "key") { sheet = .importAccount }
                     Button("Watch an address…", systemImage: "eye") { sheet = .addAddress }
+                    Button("Export wallet…", systemImage: "square.and.arrow.up") { sheet = .exportWallet }
                     Divider()
                     Button("Networks…", systemImage: "network") { sheet = .networks }
                 } label: {

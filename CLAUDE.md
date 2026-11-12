@@ -76,7 +76,10 @@ Running on a device or as "Designed for iPad" on the Mac needs an Apple Developm
   `SignetApp.makeModel`: no backups, no `~/.tezos-client` import, shielded store in memory).
 - `SignetGo/Platform`: replacements for Mac-only upstream files, same type names and API
   (`LedgerHID` stub, `PublicHTTPClient` stub that refuses every request) and iOS-only care
-  (`WalletDirectory`: backup exclusion and file protection for `<container>/.signet`).
+  (`WalletDirectory`: file protection for `<container>/.signet`, which is in device backups).
+- `SignetGo/Services`: iOS-side logic that is not a replacement: `KeyPolicy` (mainnet keys always
+  encrypted, 12-character minimum; apply it wherever a key is written) and `RecoveryPhrase`
+  (BIP39 phrases in Swift; candidates to move upstream).
 - `SignetGo/Views`: iPhone views. Upstream statics that upstream's tests call keep their
   names and signatures (`SendSheet.capture`).
 - `Tests/SignetGoTests`: the port's own tests (`NeverIncludedTests` guards Buy/TzEL staying out).

@@ -58,11 +58,18 @@ struct ImportAccountView: View {
     private var existing: Wallet? { preview.flatMap { m in model.wallets.first { $0.address.value == m.address } } }
     /// An encrypted key pasted in is stored as it is; the storage password question does not apply.
     private var keepsOwnEncryption: Bool { source == .secretKey && inspected?.isEncrypted == true }
+    /// Mainnet keys written to the device are always encrypted (`KeyPolicy`); session keys and
+    /// already-encrypted keys follow upstream's rules.
+    private var mustEncrypt: Bool { keep == .directory && !keepsOwnEncryption && KeyPolicy.requiresEncryption(on: model.network) }
+    private var encrypts: Bool { encrypt || mustEncrypt }
     private var passwordProblem: String? {
-        guard encrypt, !keepsOwnEncryption else { return nil }
-        if password.count < WalletViewModel.minimumPassphraseLength { return "Use at least \(WalletViewModel.minimumPassphraseLength) characters." }
-        if password != confirmPassword { return "The passwords do not match." }
-        return nil
+        guard encrypts, !keepsOwnEncryption else { return nil }
+        if keep == .session {
+            if password.count < WalletViewModel.minimumPassphraseLength { return "Use at least \(WalletViewModel.minimumPassphraseLength) characters." }
+            if password != confirmPassword { return "The passwords do not match." }
+            return nil
+        }
+        return KeyPolicy.passwordProblem(password, confirm: confirmPassword, on: model.network)
     }
     private var canImport: Bool { preview != nil && existing == nil && !trimmedAlias.isEmpty && passwordProblem == nil && !isImporting }
 
@@ -193,8 +200,12 @@ struct ImportAccountView: View {
                 .font(.footnote).foregroundStyle(.secondary)
         }
         if !keepsOwnEncryption {
-            Toggle(keep == .session ? "Encrypt in memory with a password" : "Encrypt with a password", isOn: $encrypt)
-            if encrypt {
+            Toggle(keep == .session ? "Encrypt in memory with a password" : "Encrypt with a password", isOn: mustEncrypt ? .constant(true) : $encrypt)
+                .disabled(mustEncrypt)
+            if mustEncrypt {
+                Text("Mainnet keys are always encrypted on this device: they are in its backups, and the password is what protects them there.").font(.footnote).foregroundStyle(.secondary)
+            }
+            if encrypts {
                 SecureField("Password", text: $password)
                 SecureField("Confirm password", text: $confirmPassword)
                 if let passwordProblem, !password.isEmpty { Text(passwordProblem).font(.footnote).foregroundStyle(.secondary) }
@@ -264,7 +275,7 @@ struct ImportAccountView: View {
             defer { isImporting = false }
             do {
                 try await model.importAccount(alias: trimmedAlias, material: preview, alreadyEncrypted: keepsOwnEncryption,
-                                              storePassphrase: (!keepsOwnEncryption && encrypt) ? password : nil,
+                                              storePassphrase: (!keepsOwnEncryption && encrypts) ? password : nil,
                                               keepForSession: keep == .session)
                 dismiss()
             } catch {

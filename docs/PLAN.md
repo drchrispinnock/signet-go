@@ -65,7 +65,7 @@ Keys behave as they do in Signet on the Mac; the iPhone's backup plays the part 
 backups.
 
 - Wallet files stay in octez-client's format (upstream's `TezosClientStore`, unchanged) inside
-  the app container (`<container>/.signet`), with Data Protection `complete`, and **included in
+  the app container (`Library/Application Support/.signet`), with Data Protection `complete`, and **included in
   the device's iCloud / computer backup** (`WalletDirectory`), as `~/.signet` is in the Mac's.
   A backup is protected by Apple's encryption, end to end with Advanced Data Protection on.
 - **Mainnet keys on the device are always encrypted** (octez `encrypted:`, as upstream writes
@@ -97,7 +97,8 @@ Made in the submodule's working tree so the iOS build works; they belong in the 
 (commit there, then bump the submodule):
 
 - `Signet/Services/TezosClientStore.swift`, `FileManager.userHome`: `#if os(macOS)` for
-  `homeDirectoryForCurrentUser` (unavailable on iOS), `NSHomeDirectory()` on other Darwin.
+  `homeDirectoryForCurrentUser` (unavailable on iOS); on other Darwin the app's Application
+  Support folder (an iOS container's root is read-only on a device).
 - `SignetTests/TezosClientStoreTests.swift` (`aHeldLockMakesCallersWaitThenFail`) and
   `SignetTests/AuditFixTests.swift` (`shieldedWalletFileIsLockedAgainstOtherProcesses`):
   `#if !os(iOS)`, since they hold the lock from a python3 `Process`.

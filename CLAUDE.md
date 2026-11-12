@@ -89,7 +89,8 @@ certificate of team `CP8YGC8C4P` (`DEVELOPMENT_TEAM` in `project.yml`).
   `SignetApp.makeModel`: no backups, no `~/.tezos-client` import, shielded store in memory).
 - `SignetGo/Platform`: replacements for Mac-only upstream files, same type names and API
   (`LedgerHID` stub, `PublicHTTPClient` stub that refuses every request) and iOS-only care
-  (`WalletDirectory`: file protection for `<container>/.signet`, which is in device backups).
+  (`WalletDirectory`: file protection for `Library/Application Support/.signet`, which is in
+  device backups; the container's root is read-only on a device, though the simulator allows it).
 - `SignetGo/Services`: iOS-side logic that is not a replacement: `KeyPolicy` (mainnet keys always
   encrypted, 12-character minimum; apply it wherever a key is written) and `RecoveryPhrase`
   (BIP39 phrases in Swift; candidates to move upstream).

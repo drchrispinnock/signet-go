@@ -12,6 +12,14 @@ import Testing
         #expect(KeyPolicy.passwordProblem("8 chars!", confirm: "8 chars!", on: .shadownet) == nil)
     }
 
+    /// The container's root is read-only on a device (the simulator does not enforce it), so the
+    /// wallet lives in Application Support.
+    @Test func walletDirectoryIsInApplicationSupport() {
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        #expect(TezosClientStore.defaultDirectory.standardizedFileURL.path.hasPrefix(support.standardizedFileURL.path))
+        #expect(TezosClientStore.defaultDirectory.lastPathComponent == ".signet")
+    }
+
     /// The wallet directory is in device backups again, and earlier builds' exclusion is undone.
     @Test func walletDirectoryIsBackedUp() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("signet-go-\(UUID().uuidString)", isDirectory: true)

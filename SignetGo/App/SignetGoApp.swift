@@ -6,7 +6,8 @@ struct SignetGoApp: App {
     static var isTestHost: Bool { ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil }
 
     /// The iOS composition root, after upstream's `SignetApp.makeModel`. Differences: the wallet
-    /// directory is `<container>/.signet` (upstream's default, through `FileManager.userHome`),
+    /// directory is `Library/Application Support/.signet` (upstream's default, through
+    /// `FileManager.userHome`),
     /// excluded from device backups and protected while the device is locked; there are no
     /// backup generations, no `~/.tezos-client` import, and shielded state stays in memory
     /// because shielded transactions are never enabled here (docs/PLAN.md).

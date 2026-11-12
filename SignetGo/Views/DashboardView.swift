@@ -145,14 +145,15 @@ struct BadgeLabel: View {
     }
 }
 
-/// Send, Receive, Get tez (test networks), Stake. Send and Stake come with their screens.
+/// Send, Receive, Get tez (test networks), Stake. Stake comes with its screen.
 struct ActionButtonsView: View {
     @Bindable var model: WalletViewModel
     @Binding var sheet: Sheet?
 
     var body: some View {
         HStack(spacing: 0) {
-            action("Send", "arrow.up") {}.disabled(true)
+            action("Send", "arrow.up") { sheet = .send }
+                .disabled(model.selectedWallet?.keyKind.canSign != true || model.accountNotOnChain)
             action("Receive", "arrow.down") { sheet = .receive }
             if !model.network.isMainnet, model.network.faucetURL != nil {
                 action("Get tez", "drop") { Task { await model.requestTestTez() } }

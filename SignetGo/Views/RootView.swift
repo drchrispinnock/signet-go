@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The sheets the app can show. One at a time, as on the Mac.
 enum Sheet: String, Identifiable {
-    case receive, addAddress, importAccount, networks
+    case send, receive, addAddress, importAccount, networks
     var id: String { rawValue }
 }
 
@@ -24,6 +24,8 @@ struct RootView: View {
         .sheet(item: $sheet) { sheet in
             NavigationStack {
                 switch sheet {
+                case .send:
+                    if let sender = model.selectedWallet { SendSheet(model: model, sender: sender) }
                 case .receive: ReceiveView(model: model)
                 case .addAddress: AddAddressView(model: model)
                 case .importAccount: ImportAccountView(model: model)

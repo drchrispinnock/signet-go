@@ -120,6 +120,7 @@ private struct ComposeTransferView: View {
     @Binding var side: ChainSide
     let canSwitch: Bool
     @FocusState private var focus: Field?
+    @State private var scanning = false
     private enum Field { case recipient, amount }
 
     var body: some View {
@@ -158,6 +159,7 @@ private struct ComposeTransferView: View {
                     .focused($focus, equals: .recipient)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                Button { scanning = true } label: { Label("Scan a QR code", systemImage: "qrcode.viewfinder") }
                 recipientStatus
                 if send.recipient == nil {
                     ForEach(send.suggestions.prefix(6)) { wallet in
@@ -203,6 +205,9 @@ private struct ComposeTransferView: View {
             }
         }
         .onAppear { focus = .recipient }
+        .sheet(isPresented: $scanning) {
+            NavigationStack { QRScannerView(title: "Scan recipient") { send.recipientText = ScannedRecipient.text(from: $0) } }
+        }
     }
 
     @ViewBuilder private var recipientStatus: some View {

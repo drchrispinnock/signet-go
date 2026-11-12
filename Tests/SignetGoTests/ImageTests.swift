@@ -38,3 +38,18 @@ import UIKit
         #expect(image?.cgImage?.width == 40)
     }
 }
+
+@Suite struct ScannedCodeTests {
+    @Test func readsAddressesAndTezosURIs() {
+        #expect(ScannedRecipient.text(from: " tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb\n") == "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb")
+        #expect(ScannedRecipient.text(from: "tezos:tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb?amount=1") == "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb")
+        #expect(ScannedRecipient.text(from: "TEZOS://KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton@NetXdQprcVkpaWU") == "KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton")
+        #expect(ScannedRecipient.text(from: "alice.tez") == "alice.tez")
+    }
+
+    /// A QR code made by our own encoder is read back by the photo path.
+    @Test func decodesOurOwnQRCode() throws {
+        let image = try #require(QRCode.image(for: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb", size: 200))
+        #expect(QRCode.decode(image) == "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb")
+    }
+}

@@ -39,6 +39,8 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Signet Go uses the camera to scan QR codes: addresses to send to, and dApp pairing codes.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© Chris Pinnock 2026</string>
 	<key>UIApplicationSceneManifest</key>

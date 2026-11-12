@@ -12,6 +12,7 @@ struct AddAddressView: View {
     @State private var suggestedName: String?
     @State private var errorMessage: String?
     @State private var isAdding = false
+    @State private var scanning = false
 
     private var trimmedAddress: Address { Address(address.trimmingCharacters(in: .whitespacesAndNewlines)) }
     private var addressLooksValid: Bool { trimmedAddress.isValidAccount }
@@ -24,6 +25,7 @@ struct AddAddressView: View {
                     .font(.body.monospaced())
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                Button { scanning = true } label: { Label("Scan a QR code", systemImage: "qrcode.viewfinder") }
                 TextField("Name", text: $alias, prompt: Text("e.g. Alice"))
                 if let suggestedName, suggestedName != alias.trimmingCharacters(in: .whitespaces) {
                     Button("Use “\(suggestedName)” from TzProfiles") { alias = suggestedName }
@@ -60,6 +62,9 @@ struct AddAddressView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) { Button("Add", action: add).disabled(!canAdd) }
+        }
+        .sheet(isPresented: $scanning) {
+            NavigationStack { QRScannerView(title: "Scan address") { address = ScannedRecipient.text(from: $0) } }
         }
         .task(id: address) {
             previewDomains = []

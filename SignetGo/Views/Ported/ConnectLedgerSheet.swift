@@ -113,7 +113,7 @@ struct ConnectLedgerSheet: View {
                 }
             } else {
                 Circle().fill(Color.red).frame(width: 9, height: 9)
-                Text("No Ledger found. Plug it in, unlock it and open the Tezos app.")
+                Text("No Ledger found. Turn on Bluetooth on your Nano X, Flex or Stax, unlock it and open the Tezos app. The Nano S and Nano S Plus have no Bluetooth and cannot be used with an iPhone.")
                     .foregroundStyle(.secondary)
             }
         }

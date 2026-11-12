@@ -232,7 +232,7 @@ struct ActionButtonsView: View {
                 .disabled(model.selectedWallet?.keyKind.canSign != true || model.accountNotOnChain)
             action("Receive", "arrow.down") { sheet = .receive }
             if !model.network.isMainnet, model.network.faucetURL != nil {
-                action("Get tez", "drop") { Task { await model.requestTestTez() } }
+                action("Get tez", "drop") { sheet = .faucet }
                     .disabled(model.selectedWallet?.address.isContract != false || isFaucetBusy)
             }
             action("Stake", "lock") { sheet = .staking }

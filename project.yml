@@ -80,15 +80,29 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Signet.app/Signet"
         BUNDLE_LOADER: "$(TEST_HOST)"
+  SignetUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Tests/SignetUITests
+    dependencies:
+      - target: SignetGo
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.tezos.signet.go.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: SignetGo
 schemes:
   SignetGo:
     build:
       targets:
         SignetGo: all
         SignetTests: [test]
+        SignetUITests: [test]
     run:
       config: Debug
     test:
       config: Debug
       targets:
         - SignetTests
+        - SignetUITests

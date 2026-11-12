@@ -73,6 +73,11 @@ xcrun devicectl device install app --device <device id> build/Build/Products/Deb
 xcrun devicectl device process launch --device <device id> org.tezos.signet.go
 ```
 
+UI tests (`Tests/SignetUITests`, XCTest UI testing, target `SignetUITests`) drive the real app
+on the simulator: menus, sheets and typing. Run one with `-only-testing:SignetUITests`; failure
+screenshots and hierarchies are in the result bundle (`-resultBundlePath`, then
+`xcrun xcresulttool export attachments`).
+
 Live network tests are opt-in as upstream: `TEST_RUNNER_SIGNET_NETWORK_TESTS=1 xcodebuild … test`.
 Ad-hoc signing is refused for the iOS SDK; device builds use the Apple Development
 certificate of team `CP8YGC8C4P` (`DEVELOPMENT_TEAM` in `project.yml`).

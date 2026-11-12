@@ -122,3 +122,10 @@ Upstream tests not yet compiled here: `ArtworkPolicyTests`, `AvatarTests`, `NFTT
 - App Store: guideline 3.1.5(b) wants wallet apps from developers enrolled as an organization;
   the current account is an individual. TestFlight first; settle enrolment before review.
 - TzEL refactor upstream (see above).
+- Desktop ↔ mobile (on hold until the iOS app works on devices). Proposed: first a one-off
+  migration file (`.signetwallet`: the octez files sealed with a transfer password, carried by
+  AirDrop/Files, merged with upstream's `TezosClientStore.importWallets`, Export/Import added
+  upstream for Mac and GTK too; dApp sessions and the operation journal stay per device);
+  later, ongoing sync of non-secret data (address book, contracts, multisig proposals) and keys
+  through iCloud Keychain. Not iCloud Drive over `.signet` itself: its lock and journal assume
+  one writer.

@@ -50,6 +50,18 @@ struct DashboardView: View {
             if let error = model.errorMessage {
                 Section { Text(error).foregroundStyle(.red) }
             }
+            Section {
+                Button { sheet = .networks } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "network")
+                        Text(model.network.name)
+                        if !model.network.isMainnet { BadgeLabel(text: "Test network") }
+                    }
+                    .font(.footnote)
+                }
+                NodeStatusRow(monitor: model.nodeMonitor, label: "Layer 1")
+                if model.network.hasL2 { NodeStatusRow(monitor: model.l2Monitor, label: "Layer 2") }
+            }
         }
         .navigationTitle(model.selectedWallet?.alias ?? "Signet Go")
         .navigationBarTitleDisplayMode(.inline)
@@ -77,6 +89,7 @@ struct DashboardView: View {
                     Button("Export wallet…", systemImage: "square.and.arrow.up") { sheet = .exportWallet }
                     Divider()
                     Button("Networks…", systemImage: "network") { sheet = .networks }
+                    Button("Settings…", systemImage: "gear") { sheet = .settings }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }

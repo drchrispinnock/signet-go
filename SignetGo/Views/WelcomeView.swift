@@ -32,8 +32,11 @@ struct WelcomeView: View {
                 .buttonStyle(.bordered)
             }
             .controlSize(.large)
-            Button("Network: \(model.network.name)") { sheet = .networks }
-                .font(.footnote)
+            HStack(spacing: 20) {
+                Button("Network: \(model.network.name)") { sheet = .networks }
+                Button("Settings") { sheet = .settings }
+            }
+            .font(.footnote)
         }
         .padding(24)
     }

@@ -31,6 +31,11 @@ struct DashboardView: View {
                 .pickerStyle(.segmented)
                 .listRowBackground(Color.clear)
                 .listRowInsets(EdgeInsets())
+                if model.filtersLayers {
+                    LayerToggles(shown: $model.shownLayers)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+                }
                 switch model.activityTab {
                 case .nfts:
                     NFTGridSection(model: model, sheet: $sheet)
@@ -89,6 +94,9 @@ struct DashboardView: View {
                     Button("Export wallet…", systemImage: "square.and.arrow.up") { sheet = .exportWallet }
                     Divider()
                     Button("dApps…", systemImage: "app.connected.to.app.below.fill") { sheet = .connectDApp }
+                    if model.canBridge {
+                        Button("Bridge to Etherlink…", systemImage: "arrow.left.arrow.right") { sheet = .bridge }
+                    }
                     Divider()
                     Button("Networks…", systemImage: "network") { sheet = .networks }
                     Button("Settings…", systemImage: "gear") { sheet = .settings }
@@ -239,5 +247,37 @@ struct AccountNotOnChainView: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+/// Tezos and Etherlink chips above the activity while Layer 2 is on; each cuts the tabs to the
+/// layers it leaves lit (upstream's LayerToggles).
+struct LayerToggles: View {
+    @Binding var shown: Set<Int>
+
+    var body: some View {
+        HStack(spacing: 8) {
+            chip(layer: 1, logo: "TezosToken", name: "Tezos")
+            chip(layer: 2, logo: "EtherlinkLogo", name: "Etherlink")
+            Spacer()
+        }
+    }
+
+    private func chip(layer: Int, logo: String, name: String) -> some View {
+        let on = shown.contains(layer)
+        return Button {
+            if on { shown.remove(layer) } else { shown.insert(layer) }
+        } label: {
+            HStack(spacing: 4) {
+                Image(logo).resizable().frame(width: 16, height: 16)
+                Text(name).font(.caption)
+            }
+            .padding(.horizontal, 10).padding(.vertical, 5)
+            .background(Capsule().fill(on ? AnyShapeStyle(.tint.opacity(0.15)) : AnyShapeStyle(.quaternary)))
+            .opacity(on ? 1 : 0.5)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(name)
+        .accessibilityAddTraits(on ? .isSelected : [])
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The sheets the app can show. One at a time, as on the Mac.
 enum Sheet: Identifiable, Hashable {
-    case send, receive, staking, rename, forget, exportKey, rememberKey, createAccount, addAddress, importAccount, exportWallet, networks, settings, connectDApp, dappRequest
+    case send, receive, staking, rename, forget, exportKey, rememberKey, createAccount, addAddress, importAccount, exportWallet, networks, settings, connectDApp, dappRequest, bridge
     case nft(NFT)
     case nftOperation(NFTOperation)
     case nftDownload(NFTDownload)
@@ -55,6 +55,7 @@ struct RootView: View {
                 case .networks: NetworksView(model: model)
                 case .settings: SettingsView(model: model)
                 case .connectDApp: ConnectDAppView(model: model)
+                case .bridge: BridgeView(model: model)
                 case .dappRequest:
                     if let request = model.dapps.current {
                         DAppRequestView(model: model, request: request).id(request.id)

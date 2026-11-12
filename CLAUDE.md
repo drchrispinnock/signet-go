@@ -64,9 +64,18 @@ xcodebuild -project SignetGo.xcodeproj -scheme SignetGo -destination 'platform=i
 xcodebuild … test -only-testing:SignetTests/NeverIncludedTests
 ```
 
+On the user's iPhone (`xcrun devicectl list devices` gives the id; the Apple Development
+certificate and the team are set up, and Xcode registers new devices on the first signed build):
+
+```sh
+xcodebuild -project SignetGo.xcodeproj -scheme SignetGo -destination 'id=<device id>' -derivedDataPath build -allowProvisioningUpdates -allowProvisioningDeviceRegistration build
+xcrun devicectl device install app --device <device id> build/Build/Products/Debug-iphoneos/Signet.app
+xcrun devicectl device process launch --device <device id> org.tezos.signet.go
+```
+
 Live network tests are opt-in as upstream: `TEST_RUNNER_SIGNET_NETWORK_TESTS=1 xcodebuild … test`.
-Running on a device or as "Designed for iPad" on the Mac needs an Apple Development team
-(`DEVELOPMENT_TEAM`); ad-hoc signing is refused for the iOS SDK.
+Ad-hoc signing is refused for the iOS SDK; device builds use the Apple Development
+certificate of team `CP8YGC8C4P` (`DEVELOPMENT_TEAM` in `project.yml`).
 
 ## Layout
 

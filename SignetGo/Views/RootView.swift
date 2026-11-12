@@ -2,7 +2,7 @@ import SwiftUI
 
 /// The sheets the app can show. One at a time, as on the Mac.
 enum Sheet: Identifiable, Hashable {
-    case send, receive, staking, rename, forget, exportKey, rememberKey, createAccount, addAddress, importAccount, exportWallet, networks, settings
+    case send, receive, staking, rename, forget, exportKey, rememberKey, createAccount, addAddress, importAccount, exportWallet, networks, settings, connectDApp, dappRequest
     case nft(NFT)
     case nftOperation(NFTOperation)
     case nftDownload(NFTDownload)
@@ -54,11 +54,31 @@ struct RootView: View {
                 case .exportWallet: ExportWalletView(model: model)
                 case .networks: NetworksView(model: model)
                 case .settings: SettingsView(model: model)
+                case .connectDApp: ConnectDAppView(model: model)
+                case .dappRequest:
+                    if let request = model.dapps.current {
+                        DAppRequestView(model: model, request: request).id(request.id)
+                    }
                 case .nft(let nft): NFTDetailView(model: model, nft: nft, next: $sheet)
                 case .nftOperation(let operation): TransferNFTView(model: model, operation: operation)
                 case .nftDownload(let download): DownloadNFTsView(download: download)
                 }
             }
+        }
+        // dApp requests open by themselves, one sheet at a time: when another sheet is up they
+        // wait for it to close (Connect closes itself when the first request arrives).
+        .onChange(of: model.dapps.current?.id) { _, id in
+            if id == nil, sheet == .dappRequest { sheet = nil }
+            else if id != nil, sheet == nil { sheet = .dappRequest }
+        }
+        .onChange(of: sheet) { _, new in
+            if new == nil, model.dapps.current != nil {
+                Task { try? await Task.sleep(for: .milliseconds(400)); if sheet == nil, model.dapps.current != nil { sheet = .dappRequest } }
+            }
+        }
+        // A signet:// pairing link opens Connect, which pairs with it.
+        .onChange(of: model.pendingPairingCode) { _, code in
+            if code != nil, sheet != .connectDApp { sheet = .connectDApp }
         }
         .preferredColorScheme(appearance.colorScheme)
         .alert(Disclaimer.title, isPresented: $disclaimerShown) {

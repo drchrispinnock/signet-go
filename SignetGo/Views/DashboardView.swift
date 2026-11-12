@@ -88,6 +88,8 @@ struct DashboardView: View {
                     Button("Watch an address…", systemImage: "eye") { sheet = .addAddress }
                     Button("Export wallet…", systemImage: "square.and.arrow.up") { sheet = .exportWallet }
                     Divider()
+                    Button("dApps…", systemImage: "app.connected.to.app.below.fill") { sheet = .connectDApp }
+                    Divider()
                     Button("Networks…", systemImage: "network") { sheet = .networks }
                     Button("Settings…", systemImage: "gear") { sheet = .settings }
                 } label: {

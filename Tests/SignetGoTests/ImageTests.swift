@@ -53,3 +53,13 @@ import UIKit
         #expect(QRCode.decode(image) == "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb")
     }
 }
+
+@Suite struct DAppScannedCodeTests {
+    @Test func readsPairingLinksAndBareCodes() {
+        #expect(DAppScannedCode.code(from: "tezos://?type=tzip10&data=ABC123") == "ABC123")
+        #expect(DAppScannedCode.code(from: "signet://?type=tzip10&data=XYZ") == "XYZ")
+        #expect(DAppScannedCode.code(from: "https://wallet.example/?type=tzip10&data=Q") == "Q")
+        #expect(DAppScannedCode.code(from: "  bare-code \n") == "bare-code")
+        #expect(DAppScannedCode.code(from: "tezos://?type=other&data=Q") == "tezos://?type=other&data=Q")
+    }
+}

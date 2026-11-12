@@ -64,9 +64,8 @@ targets:
           - "BuyWebViewTests.swift"
           - "MtPelerinTests.swift"   # Buy is never included
           - "WalletLockMeasurementTests.swift"   # opt-in benchmark driving python3
+          # Mac-only drawing (NSImage), or curl's configuration format.
           - "ArtworkCacheTests.swift"
-          # Waiting on the iOS ImageLoader/ArtworkCache and the Network.framework PublicHTTPClient.
-          - "ArtworkPolicyTests.swift"
           - "AvatarTests.swift"
           - "NFTTests.swift"
           - "AuditRepairTests.swift"

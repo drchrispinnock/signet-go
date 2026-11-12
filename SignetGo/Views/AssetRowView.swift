@@ -51,9 +51,13 @@ struct AssetRowView: View {
         case .etherlink: Image("EtherlinkLogo").resizable().scaledToFit()
         case .shielded: EmptyView() // never enabled in Signet Go
         case .token:
-            ZStack {
-                Circle().strokeBorder(.secondary, lineWidth: 1.5)
-                Text(String(asset.symbol.prefix(4))).font(.caption2.weight(.semibold))
+            RemoteImage(urls: asset.iconURLs, maxPixelSize: 128) { image in
+                Image(uiImage: image).resizable().scaledToFit().clipShape(Circle())
+            } placeholder: { _ in
+                ZStack {
+                    Circle().strokeBorder(.secondary, lineWidth: 1.5)
+                    Text(String(asset.symbol.prefix(4))).font(.caption2.weight(.semibold))
+                }
             }
         }
     }

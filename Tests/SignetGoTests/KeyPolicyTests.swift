@@ -17,7 +17,7 @@ import Testing
     @Test func walletDirectoryIsInApplicationSupport() {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         #expect(TezosClientStore.defaultDirectory.standardizedFileURL.path.hasPrefix(support.standardizedFileURL.path))
-        #expect(TezosClientStore.defaultDirectory.lastPathComponent == ".signet")
+        #expect(TezosClientStore.defaultDirectory.lastPathComponent == "Signet")
     }
 
     /// The wallet directory is in device backups again, and earlier builds' exclusion is undone.

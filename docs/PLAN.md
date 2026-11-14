@@ -42,6 +42,8 @@ on the iOS simulator.
 | NFT transfer, burn, download (to Photos/Files) | v1.1 |
 | Expert mode: multisig, baking, governance (layer 1 and Etherlink), proof of possession | later |
 | Ledger over Bluetooth | later |
+| App lock (Face ID / passcode, grace period) and app-switcher privacy cover | v1 |
+| Version from git: numeric tag as the version, commit count as the build | v1 |
 | Secure Enclave (secret wrapping, tz3 device keys) | after the Mac version has it |
 
 **Not included:**

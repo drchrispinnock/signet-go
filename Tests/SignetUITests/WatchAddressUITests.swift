@@ -4,7 +4,7 @@ import XCTest
 final class WatchAddressUITests: XCTestCase {
     func testTypingIntoWatchAnAddress() throws {
         let app = XCUIApplication()
-        app.launchArguments += ["-showsDisclaimer", "NO"]
+        app.launchArguments += ["-showsDisclaimer", "NO", "-appLockEnabled", "NO"]
         app.launch()
         // From the welcome screen, or from the dashboard's ••• menu.
         if app.buttons["Watch an address"].waitForExistence(timeout: 5) {

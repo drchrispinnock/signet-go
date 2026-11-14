@@ -21,6 +21,7 @@ enum Sheet: Identifiable, Hashable {
 /// Welcome screen with no accounts, else the dashboard.
 struct RootView: View {
     @Bindable var model: WalletViewModel
+    var appLock: AppLock?
     @State private var sheet: Sheet?
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(Appearance.key) private var appearance: Appearance = .system
@@ -107,6 +108,7 @@ struct RootView: View {
             }
         }
         .task {
+            if !isTestHost { appLock?.start() }
             if showsDisclaimer, !isTestHost { disclaimerShown = true }
             model.nodeMonitor.start()
             model.l2Monitor.start()

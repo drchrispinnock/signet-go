@@ -49,8 +49,12 @@ targets:
         SWIFT_OBJC_BRIDGING_HEADER: SignetGo/SignetGo-Bridging-Header.h
         TARGETED_DEVICE_FAMILY: "1,2"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        MARKETING_VERSION: "0.0"
-        CURRENT_PROJECT_VERSION: "1"
+        MARKETING_VERSION: "0.1"   # overwritten from a numeric git tag by scripts/stamp-version.sh
+        CURRENT_PROJECT_VERSION: "1"   # overwritten with the commit count
+    postBuildScripts:
+      - name: Stamp version from git
+        path: scripts/stamp-version.sh
+        basedOnDependencyAnalysis: false
   SignetTests:
     type: bundle.unit-test
     platform: iOS

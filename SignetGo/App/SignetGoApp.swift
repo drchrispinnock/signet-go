@@ -7,8 +7,8 @@ struct SignetGoApp: App {
 
     /// The iOS composition root, after upstream's `SignetApp.makeModel`. Differences: the wallet
     /// directory is `Library/Application Support/Signet` (upstream's default, through
-    /// `FileManager.userHome`),
-    /// excluded from device backups and protected while the device is locked; there are no
+    /// `FileManager.userHome`), in device backups and protected while the device is locked
+    /// (mainnet keys are always encrypted, `KeyPolicy`); there are no
     /// backup generations, no `~/.tezos-client` import, and shielded state stays in memory
     /// because shielded transactions are never enabled here (docs/PLAN.md).
     @MainActor static func makeModel(isTestHost: Bool = isTestHost) -> WalletViewModel {
@@ -35,10 +35,11 @@ struct SignetGoApp: App {
     }
 
     @State private var model = SignetGoApp.makeModel()
+    @State private var appLock = AppLock()
 
     var body: some Scene {
         WindowGroup {
-            RootView(model: model)
+            RootView(model: model, appLock: appLock)
                 // signet://?type=tzip10&data=<pairing code>: dApp pairing links.
                 .onOpenURL { url in model.handleIncomingURL(url) }
         }

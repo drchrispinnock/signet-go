@@ -78,6 +78,10 @@ on the simulator: menus, sheets and typing. Run one with `-only-testing:SignetUI
 screenshots and hierarchies are in the result bundle (`-resultBundlePath`, then
 `xcrun xcresulttool export attachments`).
 
+`scripts/stamp-version.sh` (a build phase) sets the version from the latest tag when it is
+numeric (`v0.2` → 0.2, as App Store Connect requires), the build number from the commit count,
+and `SignetGitDescribe` for Settings.
+
 Live network tests are opt-in as upstream: `TEST_RUNNER_SIGNET_NETWORK_TESTS=1 xcodebuild … test`.
 Ad-hoc signing is refused for the iOS SDK; device builds use the Apple Development
 certificate of team `CP8YGC8C4P` (`DEVELOPMENT_TEAM` in `project.yml`).
@@ -94,7 +98,9 @@ certificate of team `CP8YGC8C4P` (`DEVELOPMENT_TEAM` in `project.yml`).
   `SignetApp.makeModel`: no backups, no `~/.tezos-client` import, shielded store in memory).
 - `SignetGo/Platform`: replacements for Mac-only upstream files, same type names and API
   (`LedgerHID` over Bluetooth LE, `PublicHTTPClient` on Network.framework, `ImageLoader`/`ArtworkCache` on `UIImage`, `QRCode` on Core Image) and iOS-only care
-  (`WalletDirectory`: file protection for `Library/Application Support/Signet`, which is in
+  (`AppLock`: Face ID or passcode at launch and after a grace period, and the privacy cover,
+  in a window of its own above the sheets; UI tests launch with `-appLockEnabled NO`;
+  `WalletDirectory`: file protection for `Library/Application Support/Signet`, which is in
   device backups; the container's root is read-only on a device, though the simulator allows it).
 - `SignetGo/Services`: iOS-side logic that is not a replacement: `KeyPolicy` (mainnet keys always
   encrypted, 12-character minimum; apply it wherever a key is written) and `RecoveryPhrase`

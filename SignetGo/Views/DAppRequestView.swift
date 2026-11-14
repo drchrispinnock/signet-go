@@ -88,9 +88,19 @@ struct DAppRequestView: View {
         switch request {
         case .permission(_, _, let networkType, let rpcURL, let scopes):
             VStack(alignment: .leading, spacing: 12) {
-                Picker("Share account", selection: $chosenWallet) {
-                    ForEach(model.wallets.filter { $0.publicKey != nil && $0.keyKind.canSign }) { wallet in
-                        Text("\(wallet.alias)  \(wallet.address.shortened())").tag(Optional(wallet))
+                let shareable = model.wallets.filter { $0.publicKey != nil && $0.keyKind.canSign }
+                if shareable.isEmpty {
+                    // Connect needs an account that can sign; say why it is greyed out.
+                    Label(model.wallets.isEmpty
+                          ? "There is no account in Signet Go to share. Create or import one, then connect again from the dApp."
+                          : "None of your accounts can be shared: \(model.wallets.map { "“\($0.alias)” \($0.keyKind.canSign ? "has no public key" : "is watch-only")" }.joined(separator: ", ")). Import the account's key (or connect its Ledger), then connect again from the dApp.",
+                          systemImage: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                } else {
+                    Picker("Share account", selection: $chosenWallet) {
+                        ForEach(shareable) { wallet in
+                            Text("\(wallet.alias)  \(wallet.address.shortened())").tag(Optional(wallet))
+                        }
                     }
                 }
                 LabeledContent("Network", value: networkType + (rpcURL.map { " (\($0.host() ?? ""))" } ?? ""))

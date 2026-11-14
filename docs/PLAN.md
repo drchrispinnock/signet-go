@@ -93,18 +93,9 @@ backups.
 
 ## Upstream changes needed
 
-Made in the submodule's working tree so the iOS build works; they belong in the Mac repository
-(commit there, then bump the submodule):
-
-- `Signet/Services/TezosClientStore.swift`, `FileManager.userHome`: `#if os(macOS)` for
-  `homeDirectoryForCurrentUser` (unavailable on iOS); on other Darwin the app's Application
-  Support folder (an iOS container's root is read-only on a device); `defaultDirectory` is
-  `Signet` there rather than `.signet`.
-- `SignetTests/TezosClientStoreTests.swift` (`aHeldLockMakesCallersWaitThenFail`) and
-  `SignetTests/AuditFixTests.swift` (`shieldedWalletFileIsLockedAgainstOtherProcesses`):
-  `#if !os(iOS)`, since they hold the lock from a python3 `Process`.
-- `SignetTests/AuditFixTests.swift` (`plainHTTPServicesAreNamed`): `#if !SIGNET_NO_SHIELDED`,
-  the first use of the flag that option (b) for TzEL would extend.
+None outstanding. The first set (iOS wallet folder in `TezosClientStore`, the process-based
+lock tests kept off iOS, the first `SIGNET_NO_SHIELDED` use in a test) landed on upstream `main`
+in 313fd83.
 
 Wanted next, so the port need not copy code:
 

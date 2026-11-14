@@ -14,11 +14,15 @@ the Taquito bridge, approved-limits signing, the operation journal, dApp identit
 read the relevant section there before touching anything that uses it. The sibling port
 `../signet-gtk` reuses upstream the same way and is the model for how replacements are done.
 
+Where the work stands and what comes next: "Where things stand" in `docs/PLAN.md`. Secure
+Enclave design: `ENCLAVE.md` (built in the Mac app first).
+
 ## How upstream is reused
 
 - Upstream's `Signet/Models`, `Signet/Services` and `Signet/ViewModels` are compiled **as they
   are** into the app. A change the iOS app needs in shared code goes upstream (the user owns
-  that repository) and the submodule is bumped. Never commit or push in `upstream/` from here;
+  that repository) and the submodule is bumped. Never commit or push in `upstream/` from here
+  unless asked (upstream's rules: work on a `claude@<feature>` branch; the developer merges);
   any edit made in its working tree to unblock the build is listed under "Upstream changes
   needed" in `docs/PLAN.md` until it lands upstream.
 - Upstream files that need macOS (`PublicHTTPClient`'s `/usr/bin/curl`, `LedgerHID`'s IOKit,
@@ -109,3 +113,8 @@ certificate of team `CP8YGC8C4P` (`DEVELOPMENT_TEAM` in `project.yml`).
   `RootView`; dApp requests open by themselves when no other sheet is up. Upstream statics that upstream's tests call keep their
   names and signatures (`SendSheet.capture`).
 - `Tests/SignetGoTests`: the port's own tests (`NeverIncludedTests` guards Buy/TzEL staying out).
+- `Tests/SignetUITests`: XCTest UI tests typing into Watch an address from the welcome screen
+  and from the dashboard menu.
+
+`../signet` is the developer's book-writing checkout of the Mac repository (branch
+`book_preview`): never build from it or change it; the app builds from `upstream/` only.

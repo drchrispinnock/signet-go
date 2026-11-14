@@ -23,8 +23,8 @@ Upstream files that cannot build on iOS get replacements in this repository:
 
 ## Features
 
-Status (2026-11-12): everything below except Secure Enclave is built (Ledger over Bluetooth is
-written but not yet tried with a device); Expert mode
+Status (2026-11-14): everything below except Secure Enclave is built (Ledger over Bluetooth is
+written but not yet tried with a device); see "Where things stand" for what is next. Expert mode
 (Settings) shows multisig, baking, governance and proof of possession. Live Shadownet,
 Quantumnet and Etherlink tests for send, staking, dApps, bridge, alias linking and multisig pass
 on the iOS simulator.
@@ -92,6 +92,35 @@ backups.
   upstream. Two parts: wrapping stored secrets with an Enclave P-256 key, and Enclave device
   keys (tz3 signed inside the Enclave, never exportable, recoverable only through a multisig
   with a phrase key as co-signer).
+
+## Where things stand (2026-11-14)
+
+Done and committed on `main`; `upstream/` points at upstream `main` 313fd83 (the iOS changes are
+merged there). All 403 unit tests and the two UI tests pass on the iOS simulator. The app runs
+on the developer's iPhone 17 (built and installed with the commands in `CLAUDE.md`), with the
+wallet in `Library/Application Support/Signet` (an existing account migrated there).
+
+Not yet tried on the iPhone: the app lock and privacy cover (simulator only: the lock screen and
+iOS's passcode prompt appear; Face ID itself needs the phone), and Ledger over Bluetooth.
+
+Next, in order:
+
+1. **Bug: typing into "Watch an address" fails on the iPhone.** Not reproduced: both UI tests
+   (welcome screen; dashboard ••• menu with an account) type into it on the simulator. Ask the
+   developer: which way it was opened, whether the keyboard appeared, whether the field took a
+   cursor, whether a hardware/Bluetooth keyboard is paired. Then run the UI tests on the phone
+   (`-destination 'id=<device id>'`). Beware: a simulator with a hardware keyboard keeps the
+   on-screen keyboard below the screen (Safari too), which looks like this bug and is not.
+2. Install the current build on the iPhone and try the app lock (launch, grace period, turning it
+   off, the cover in the app switcher, a dApp round trip through Safari) and a Shadownet
+   shake-down (create, send, stake, dApp).
+3. Decide: Face ID for key passwords (the password in the Keychain, this device only, released
+   by Face ID). Waiting on the developer, since it is close to the Secure Enclave work that is
+   to be done on the Mac first (`ENCLAVE.md`).
+4. TestFlight: needs an App Store Connect record for `org.tezos.signet.go` (the developer makes
+   it), then a first tag (`v0.1`) so the version is stamped, and an archive build.
+5. Polish: launch screen, iPad layout, Dynamic Type.
+6. Ledger over Bluetooth with a real Nano X / Flex / Stax.
 
 ## Upstream changes needed
 
